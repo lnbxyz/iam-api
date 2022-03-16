@@ -8,6 +8,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
 import * as bodyParser from 'body-parser';
 import { getRoutes } from './routes';
+import { createConnection } from 'typeorm';
 
 function startServer({ port = process.env.PORT || 8080 } = {}) {
   const app = express();
@@ -19,6 +20,9 @@ function startServer({ port = process.env.PORT || 8080 } = {}) {
   return new Promise((resolve) => {
     const server = app.listen(port, () => {
       console.info(`Listening on port ${port}`);
+      createConnection().then((c) => {
+        console.info('Sucessfully connected to database');
+      });
 
       const originalClose = server.close.bind(server);
       server.close = (): any => {

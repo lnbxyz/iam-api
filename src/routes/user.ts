@@ -1,15 +1,16 @@
 import express, { Request, Response } from 'express';
+import { getRepository } from 'typeorm';
+import { User } from '../entities/user';
 
 function getUserRoutes() {
   const router = express.Router();
-  router.get('/test', test);
+  router.get('/', getAll);
   return router;
 }
 
-async function test(req: Request, res: Response) {
-  res.send({
-    message: 'working'
-  });
+async function getAll(req: Request, res: Response) {
+  const users = getRepository(User).find();
+  res.send({ users });
 }
 
 export { getUserRoutes };

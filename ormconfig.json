@@ -2,19 +2,19 @@
    "type": "mysql",
    "host": "localhost",
    "port": 3306,
-   "username": "test",
-   "password": "test",
-   "database": "test",
+   "username": "root",
+   "password": "root",
+   "database": "iam",
    "synchronize": true,
    "logging": false,
    "entities": [
-      "src/entity/**/*.ts"
+      "src/entities/**/*.ts"
    ],
    "migrations": [
-      "src/migration/**/*.ts"
+      "src/migrations/**/*.ts"
    ],
    "subscribers": [
-      "src/subscriber/**/*.ts"
+      "src/subscribers/**/*.ts"
    ],
    "cli": {
       "entitiesDir": "src/entities",
