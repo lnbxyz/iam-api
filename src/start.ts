@@ -6,6 +6,7 @@
 
 import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
+import * as bodyParser from 'body-parser';
 import { getRoutes } from './routes';
 
 function startServer({ port = process.env.PORT || 8080 } = {}) {
@@ -13,6 +14,7 @@ function startServer({ port = process.env.PORT || 8080 } = {}) {
 
   app.use('/', getRoutes());
   app.use(errorMiddleware);
+  app.use(bodyParser.json());
 
   return new Promise((resolve) => {
     const server = app.listen(port, () => {

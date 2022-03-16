@@ -1,34 +1,30 @@
 {
   "name": "iam-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
-  "engines": {
-    "node": "14.17.6"
-  },
-  "scripts": {
-    "start": "nodemon src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "IAM API",
+  "license": "ISC",
+  "homepage": "https://github.com/lunaboona/iam-api#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lunaboona/iam-api.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/lunaboona/iam-api/issues"
+  "scripts": {
+    "start": "nodemon src/index.ts",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
   },
-  "homepage": "https://github.com/lunaboona/iam-api#readme",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "express-async-errors": "^3.1.1",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.45"
+  },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.21",
     "nodemon": "^2.0.15",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.2"
-  },
-  "dependencies": {
-    "express": "^4.17.3",
-    "express-async-errors": "^3.1.1"
   }
 }
