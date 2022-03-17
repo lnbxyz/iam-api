@@ -13,9 +13,10 @@ import { createConnection } from 'typeorm';
 function startServer({ port = process.env.PORT || 8080 } = {}) {
   const app = express();
 
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/', getRoutes());
   app.use(errorMiddleware);
-  app.use(bodyParser.json());
 
   return new Promise((resolve) => {
     const server = app.listen(port, () => {
