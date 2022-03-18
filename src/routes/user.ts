@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { Module } from '../entities/module';
 import { User } from '../entities/user';
 
@@ -28,13 +28,34 @@ async function getOne(req: Request, res: Response) {
 
 async function create(req: Request, res: Response) {
   const repository = getRepository(User);
-  console.log(req.body);
+
+  const existingUserByEmail = await getByEmail(repository, req.body.email);
+  if (existingUserByEmail) {
+    res.status(400).send('Email is taken');
+  }
+
+  const existingUserByUsername = await getByUsername(repository, req.body.username);
+  if (existingUserByUsername) {
+    res.status(400).send('Username is taken');
+  }
+
   const result = await repository.save(req.body);
   res.send(result);
 }
 
 async function update(req: Request, res: Response) {
   const repository = getRepository(User);
+
+  const existingUserByEmail = await getByEmail(repository, req.body.email);
+  if (existingUserByEmail && existingUserByEmail.id !== req.params.id) {
+    res.status(400).send('Email is taken');
+  }
+
+  const existingUserByUsername = await getByUsername(repository, req.body.username);
+  if (existingUserByUsername && existingUserByUsername.id !== req.params.id) {
+    res.status(400).send('Username is taken');
+  }
+
   const result = repository.update(req.params.id, req.body);
   res.send(result);
 }
@@ -52,7 +73,7 @@ async function grant(req: Request, res: Response) {
   const module = await moduleRepo.findOne(req.params.moduleId);
   const user = await userRepo.findOne(req.params.id, { relations: ['modules'] });
   if (user.modules.filter((m) => m.id === req.params.moduleId).length > 0) {
-    res.status(422).send('User has already been granted access to this module');
+    res.status(400).send('User has already been granted access to this module');
     return;
   }
   user.modules.push(module);
@@ -66,11 +87,19 @@ async function revoke(req: Request, res: Response) {
   const prevLength = user.modules.length;
   user.modules = user.modules.filter((m) => m.id !== req.params.moduleId);
   if (prevLength === user.modules.length) {
-    res.status(422).send('User does not have access to this module');
+    res.status(400).send('User does not have access to this module');
     return;
   }
   const result = await userRepo.save(user);
   res.send(result);
+}
+
+async function getByEmail(repository: Repository<User>, email: string): Promise<User> {
+  return repository.findOne({ email });
+}
+
+async function getByUsername(repository: Repository<User>, username: string): Promise<User> {
+  return repository.findOne({ username });
 }
 
 export { getUserRoutes };

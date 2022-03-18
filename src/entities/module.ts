@@ -12,7 +12,7 @@ export class Module {
   @Column()
   icon: string;
 
-  @Column()
+  @Column({ unique: true })
   activityName: string;
 
   @ManyToMany(() => User, (u) => u.modules)
