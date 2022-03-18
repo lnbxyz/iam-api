@@ -32,11 +32,13 @@ async function create(req: Request, res: Response) {
   const existingUserByEmail = await getByEmail(repository, req.body.email);
   if (existingUserByEmail) {
     res.status(400).send('Email is taken');
+    return;
   }
 
   const existingUserByUsername = await getByUsername(repository, req.body.username);
   if (existingUserByUsername) {
     res.status(400).send('Username is taken');
+    return;
   }
 
   const result = await repository.save(req.body);
@@ -49,11 +51,13 @@ async function update(req: Request, res: Response) {
   const existingUserByEmail = await getByEmail(repository, req.body.email);
   if (existingUserByEmail && existingUserByEmail.id !== req.params.id) {
     res.status(400).send('Email is taken');
+    return;
   }
 
   const existingUserByUsername = await getByUsername(repository, req.body.username);
   if (existingUserByUsername && existingUserByUsername.id !== req.params.id) {
     res.status(400).send('Username is taken');
+    return;
   }
 
   const result = repository.update(req.params.id, req.body);
