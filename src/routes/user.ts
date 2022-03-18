@@ -46,36 +46,30 @@ async function _delete(req: Request, res: Response) {
   res.send();
 }
 
-// doesnt work lol
-// "Cannot query across many-to-many for property modules"
 async function grant(req: Request, res: Response) {
   const moduleRepo = getRepository(Module);
   const userRepo = getRepository(User);
   const module = await moduleRepo.findOne(req.params.moduleId);
-  const user = await userRepo.findOne(req.params.id);
-  if (!user.modules) {
-    user.modules = [];
-  }
+  const user = await userRepo.findOne(req.params.id, { relations: ['modules'] });
   if (user.modules.filter((m) => m.id === req.params.moduleId).length > 0) {
-    // todo error
+    res.status(422).send('User has already been granted access to this module');
+    return;
   }
   user.modules.push(module);
-  const result = await userRepo.update(req.params.id, user);
+  const result = await userRepo.save(user);
   res.send(result);
 }
 
 async function revoke(req: Request, res: Response) {
   const userRepo = getRepository(User);
-  const user = await userRepo.findOne(req.params.id);
-  if (!user.modules) {
-    user.modules = [];
-  }
+  const user = await userRepo.findOne(req.params.id, { relations: ['modules'] });
   const prevLength = user.modules.length;
   user.modules = user.modules.filter((m) => m.id !== req.params.moduleId);
   if (prevLength === user.modules.length) {
-    // todo error
+    res.status(422).send('User does not have access to this module');
+    return;
   }
-  const result = await userRepo.update(req.params.id, user);
+  const result = await userRepo.save(user);
   res.send(result);
 }
 
