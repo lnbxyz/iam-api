@@ -46,11 +46,16 @@ async function _delete(req: Request, res: Response) {
   res.send();
 }
 
+// doesnt work lol
+// "Cannot query across many-to-many for property modules"
 async function grant(req: Request, res: Response) {
   const moduleRepo = getRepository(Module);
   const userRepo = getRepository(User);
   const module = await moduleRepo.findOne(req.params.moduleId);
   const user = await userRepo.findOne(req.params.id);
+  if (!user.modules) {
+    user.modules = [];
+  }
   if (user.modules.filter((m) => m.id === req.params.moduleId).length > 0) {
     // todo error
   }
@@ -62,6 +67,9 @@ async function grant(req: Request, res: Response) {
 async function revoke(req: Request, res: Response) {
   const userRepo = getRepository(User);
   const user = await userRepo.findOne(req.params.id);
+  if (!user.modules) {
+    user.modules = [];
+  }
   const prevLength = user.modules.length;
   user.modules = user.modules.filter((m) => m.id !== req.params.moduleId);
   if (prevLength === user.modules.length) {
