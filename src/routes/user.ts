@@ -11,6 +11,7 @@ function getUserRoutes() {
   router.put('/:id', update);
   router.delete('/:id', _delete);
   router.post('/:id/grant/:moduleId', grant);
+  router.delete('/:id/revoke/:moduleId', revoke);
   return router;
 }
 
@@ -53,8 +54,19 @@ async function grant(req: Request, res: Response) {
   if (user.modules.filter((m) => m.id === req.params.moduleId).length > 0) {
     // todo error
   }
-
   user.modules.push(module);
+  const result = await userRepo.update(req.params.id, user);
+  res.send(result);
+}
+
+async function revoke(req: Request, res: Response) {
+  const userRepo = getRepository(User);
+  const user = await userRepo.findOne(req.params.id);
+  const prevLength = user.modules.length;
+  user.modules = user.modules.filter((m) => m.id !== req.params.moduleId);
+  if (prevLength === user.modules.length) {
+    // todo error
+  }
   const result = await userRepo.update(req.params.id, user);
   res.send(result);
 }
