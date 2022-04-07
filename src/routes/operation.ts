@@ -27,7 +27,6 @@ async function getOne(req: Request, res: Response) {
 async function create(req: Request, res: Response) {
   const repository = getRepository(Operation);
 
-  console.log(doesModuleExist(req.body.moduleId));
   if (!(await doesModuleExist(req.body.moduleId))) {
     res.status(400).send('Module does not exist');
     return;
