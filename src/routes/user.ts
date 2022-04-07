@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getRepository, Repository } from 'typeorm';
-import { Module } from '../entities/module';
+import { Operation } from '../entities/operation';
 import { User } from '../entities/user';
 
 function getUserRoutes() {
@@ -10,8 +10,8 @@ function getUserRoutes() {
   router.post('/', create);
   router.put('/:id', update);
   router.delete('/:id', _delete);
-  router.post('/:id/grant/:moduleId', grant);
-  router.delete('/:id/revoke/:moduleId', revoke);
+  router.post(`/:id/grant/:operationId`, grant);
+  router.delete('/:id/revoke/:operationId', revoke);
   return router;
 }
 
@@ -72,26 +72,26 @@ async function _delete(req: Request, res: Response) {
 }
 
 async function grant(req: Request, res: Response) {
-  const moduleRepo = getRepository(Module);
+  const operationRepo = getRepository(Operation);
   const userRepo = getRepository(User);
-  const module = await moduleRepo.findOne(req.params.moduleId);
-  const user = await userRepo.findOne(req.params.id, { relations: ['modules'] });
-  if (user.modules.filter((m) => m.id === req.params.moduleId).length > 0) {
-    res.status(400).send('User has already been granted access to this module');
+  const module = await operationRepo.findOne(req.params.operationId);
+  const user = await userRepo.findOne(req.params.id, { relations: ['operations'] });
+  if (user.operations.filter((o) => o.id === req.params.operationId).length > 0) {
+    res.status(400).send('User has already been granted access to this operation');
     return;
   }
-  user.modules.push(module);
+  user.operations.push(module);
   const result = await userRepo.save(user);
   res.send(result);
 }
 
 async function revoke(req: Request, res: Response) {
   const userRepo = getRepository(User);
-  const user = await userRepo.findOne(req.params.id, { relations: ['modules'] });
-  const prevLength = user.modules.length;
-  user.modules = user.modules.filter((m) => m.id !== req.params.moduleId);
-  if (prevLength === user.modules.length) {
-    res.status(400).send('User does not have access to this module');
+  const user = await userRepo.findOne(req.params.id, { relations: ['operations'] });
+  const prevLength = user.operations.length;
+  user.operations = user.operations.filter((o) => o.id !== req.params.operationId);
+  if (prevLength === user.operations.length) {
+    res.status(400).send('User does not have access to this operation');
     return;
   }
   const result = await userRepo.save(user);

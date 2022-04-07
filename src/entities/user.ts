@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Module } from './module';
+import { Operation } from './operation';
 
 @Entity()
 export class User {
@@ -18,7 +18,10 @@ export class User {
   @Column({ name: 'password_hash' })
   passwordHash: string;
 
-  @ManyToMany(() => Module, (m) => m.users)
+  @Column()
+  active: boolean;
+
+  @ManyToMany(() => Operation, (m) => m.users)
   @JoinTable()
-  modules: Module[];
+  operations: Operation[];
 }

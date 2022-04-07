@@ -1,5 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './user';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Operation } from './operation';
 
 @Entity()
 export class Module {
@@ -12,9 +12,6 @@ export class Module {
   @Column()
   icon: string;
 
-  @Column({ unique: true })
-  activityName: string;
-
-  @ManyToMany(() => User, (u) => u.modules)
-  users: User[];
+  @OneToMany(() => Operation, (o) => o.module, { onDelete: 'CASCADE' })
+  operations: Operation[];
 }
